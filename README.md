@@ -1,29 +1,36 @@
-# 🖥️ server — SCP File Transfer CLI Tool
+# SCP File Transfer CLI Tool
 
-A lightweight Python CLI tool that makes transferring files to your remote server fast, clean, and automated.
+A lightweight Python-based command-line interface (CLI) designed to simplify and automate file transfers to a remote server. This tool wraps SCP and SSH functionality to provide features like folder auto-zipping, progress bars, and transfer history.
+
+## Personal Project Note
+This is a personal project I built to speed up the workflow of sending files between my laptop and my local server. 
+
+**Please Note:** Security was not the primary focus during development as this tool is intended for use within a trusted local network. If you plan to use this in a personal capacity, feel free to fork the repository and update it to your needs—especially if you require SSH key-based authentication.
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```bash
 server_tool/
-├── server            ← Main executable (Python)
-├── install.sh        ← One-shot installer
+├── server            # Main executable (Python)
+├── install.sh        # One-shot installer script
 ├── lib/
-│   ├── cli.py        ← Command parser & router
-│   ├── config.py     ← Config load/save/validate
-│   ├── transfer.py   ← SCP transfer engine
-│   ├── progress.py   ← tqdm progress bar
-│   ├── history.py    ← Transfer history logger
-│   ├── notifier.py   ← Desktop notifications
-│   └── dependency.py ← Startup dependency checker
+│   ├── cli.py        # Command parser and routing logic
+│   ├── config.py     # Configuration management (load/save/validate)
+│   ├── transfer.py   # SCP transfer engine
+│   ├── progress.py   # tqdm progress bar integration
+│   ├── history.py    # Transfer history logging
+│   ├── notifier.py   # Desktop notifications (libnotify)
+│   └── dependency.py # Startup dependency verification
 └── README.md
-```
+````
 
 ---
 
-## 🚀 Installation
+## Installation
+
+To set up the tool on your system, run the following commands:
 
 ```bash
 chmod +x install.sh
@@ -31,107 +38,102 @@ chmod +x install.sh
 source ~/.bashrc
 ```
 
-The installer will:
-- Install system packages: `openssh-client`, `sshpass`, `zip`, `unzip`, `libnotify-bin`
-- Install Python package: `tqdm`
-- Copy the tool to `~/bin/server`
-- Add `~/bin` to your `PATH`
-- Set up bash tab completion
+**The installer performs the following actions:**
+
+- Installs necessary system packages: `openssh-client`, `sshpass`, `zip`, `unzip`, and `libnotify-bin`.
+- Installs the `tqdm` Python library for progress tracking.
+- Copies the tool to `~/bin/server`.
+- Adds `~/bin` to your system `PATH`.
+- Configures Bash tab completion for easier usage.
 
 ---
 
-## ⚙️ Configuration
+## Configuration
+
+Before the first use, configure your server details:
 
 ```bash
 server edit host 192.168.1.10
 server edit username yourname
 server edit password yourpassword
 server edit destination /home/yourname/Downloads
-server edit port 22                  # optional, default: 22
-server edit zip_threshold_mb 50      # optional, default: 50
+
+# Optional settings
+server edit port 22                  # Default is 22
+server edit zip_threshold_mb 50      # Threshold for auto-zipping folders (Default: 50MB)
 ```
 
-View current config:
+To view your current settings:
+
 ```bash
 server show
 ```
 
-Config is stored at: `~/.server_config.json`
+_Note: Settings are stored locally in `~/.server_config.json`._
 
 ---
+## Usage
 
-## 📤 Usage
+### Transferring Files
 
-### Transfer a file
+To send a single file:
+
 ```bash
-server /home/nav/file.txt
+server /path/to/file.txt
 ```
 
-### Transfer a folder
-```bash
-server /home/nav/project/
-```
-> Folders larger than `zip_threshold_mb` are automatically zipped, uploaded, and extracted on the server.
+### Transferring Folders
 
-### View transfer history
+To send an entire directory:
+
 ```bash
-server history        # last 10
-server history all    # everything
+server /path/to/folder/
+```
+
+_If a folder exceeds the `zip_threshold_mb` setting, the tool automatically zips the folder, uploads it, and extracts it on the destination server._
+
+### Transfer History
+
+Check your recent activity:
+
+```bash
+server history        # Displays the last 10 transfers
+server history all    # Displays the full log
 ```
 
 ### Help
+
+For a full list of commands:
+
 ```bash
 server help
 ```
 
 ---
 
-## 📊 Progress Bar
+## Features
 
-```
-  file.zip  [██████████████░░░░░░░░░] 65.2%  12.3M/18.9M  2.5MB/s  ETA 2s
-```
-
----
-
-## 📋 History Log
-
-Stored at `~/.server_history.log`:
-
-```
-[2026-03-26 21:10] SUCCESS  file.txt → /home/server/Downloads
-[2026-03-26 21:12] FAILED   project/ → /home/server/Downloads
-```
+- **Progress Tracking:** A real-time progress bar shows upload percentage, transfer speed, and estimated time remaining.
+- **Desktop Notifications:** Uses `notify-send` to alert you when a transfer completes or fails.
+- **Logging:** All activity is recorded in `~/.server_history.log`.
+- **Tab Completion:** Supports auto-completion for file paths and configuration keys.
 
 ---
 
-## 🔔 Notifications
+## Dependencies
 
-On transfer completion, a desktop notification is sent via `notify-send`:
-- ✅ **Transfer Complete** — `file.txt uploaded successfully`
-- ❌ **Transfer Failed** — `Check logs for details`
+The tool relies on the following utilities.
 
----
-
-## 🔐 Dependencies
-
-| Tool           | Purpose                        |
-|----------------|--------------------------------|
-| `scp`          | File transfer                  |
-| `ssh`          | Remote command execution       |
-| `sshpass`      | Password-based SSH automation  |
-| `zip`/`unzip`  | Folder compression             |
-| `notify-send`  | Desktop notifications          |
-| `tqdm`         | Progress bar (Python)          |
+|**Tool**|**Purpose**|
+|---|---|
+|**scp**|Core file transfer|
+|**ssh**|Remote command execution|
+|**sshpass**|Automated password authentication|
+|**zip/unzip**|Folder compression and extraction|
+|**notify-send**|Desktop alerts|
+|**tqdm**|Python-based progress bar|
 
 ---
+## License & Contributions
 
-## ⌨️ Tab Completion
-
-After install, tab completion works automatically:
-
-```bash
-server /ho<TAB>          → /home/nav/
-server edit <TAB>        → host username password destination port zip_threshold_mb
-server history <TAB>     → all
-```
+This project is open-source. Since this was built for a specific local use case, you are encouraged to fork the repository and update it to fit your own requirements, especially regarding SSH key authentication or enhanced security protocols.
