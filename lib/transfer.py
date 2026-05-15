@@ -15,7 +15,7 @@ from history import HistoryLogger
 from notifier import notify
 from progress import run_progress_bar
 
-TMP_DIR = "/tmp/server_uploads"
+TMP_DIR = "/tmp/s2s_uploads"
 
 
 class TransferEngine:
@@ -117,7 +117,7 @@ class TransferEngine:
             print(f"\n✅  Transfer complete: {name} → {destination}\n")
             notify("Transfer Complete", f"{name} uploaded successfully")
         else:
-            print(f"\n❌  Transfer failed. Check logs: server history\n")
+            print(f"\n❌  Transfer failed. Check logs: s2s history\n")
             notify("Transfer Failed", "Check logs for details")
 
     # ─────────────────────────────────────────────

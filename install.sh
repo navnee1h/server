@@ -8,20 +8,21 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BIN_DIR="$HOME/bin"
-TOOL_DEST="$BIN_DIR/server"
-LIB_DEST="$BIN_DIR/server_lib"
-COMPLETION_FILE="$HOME/.bash_completion.d/server"
+TOOL_DEST="$BIN_DIR/s2s"
+LIB_DEST="$BIN_DIR/s2s_lib"
+COMPLETION_FILE="$HOME/.bash_completion.d/s2s"
 BASHRC="$HOME/.bashrc"
 
 echo ""
 echo "╔══════════════════════════════════════╗"
-echo "║    Server CLI Tool - Installer       ║"
+echo "║      s2s CLI Tool - Installer        ║"
 echo "╚══════════════════════════════════════╝"
 echo ""
 
 # ── 1. Create ~/bin if needed ──────────────────────────────────
 mkdir -p "$BIN_DIR"
 mkdir -p "$HOME/.bash_completion.d"
+mkdir -p "$HOME/.s2s"
 
 # ── 2. Install system dependencies ────────────────────────────
 echo "📦  Installing system dependencies..."
@@ -40,14 +41,14 @@ echo ""
 
 # ── 4. Copy files to ~/bin ────────────────────────────────────
 echo "📂  Copying files to $BIN_DIR..."
-cp "$SCRIPT_DIR/server" "$TOOL_DEST"
+cp "$SCRIPT_DIR/s2s" "$TOOL_DEST"
 chmod +x "$TOOL_DEST"
 
 rm -rf "$LIB_DEST"
 cp -r "$SCRIPT_DIR/lib" "$LIB_DEST"
 
 # Patch the LIB_DIR path in the main script to point to new location
-sed -i "s|LIB_DIR = os.path.join(SCRIPT_DIR, \"lib\")|LIB_DIR = os.path.expanduser(\"~/bin/server_lib\")|g" "$TOOL_DEST"
+sed -i "s|LIB_DIR = os.path.join(SCRIPT_DIR, \"lib\")|LIB_DIR = os.path.expanduser(\"~/bin/s2s_lib\")|g" "$TOOL_DEST"
 
 echo "✅  Files installed to $BIN_DIR"
 echo ""
@@ -55,15 +56,15 @@ echo ""
 # ── 5. Add ~/bin to PATH if not already there ─────────────────
 if ! grep -q 'export PATH="$HOME/bin:$PATH"' "$BASHRC" 2>/dev/null; then
     echo "" >> "$BASHRC"
-    echo '# Added by server CLI installer' >> "$BASHRC"
+    echo '# Added by s2s CLI installer' >> "$BASHRC"
     echo 'export PATH="$HOME/bin:$PATH"' >> "$BASHRC"
     echo "✅  Added ~/bin to PATH in ~/.bashrc"
 fi
 
 # ── 6. Install bash tab completion ────────────────────────────
 cat > "$COMPLETION_FILE" << 'EOF'
-# Tab completion for server CLI tool
-_server_completion() {
+# Tab completion for s2s CLI tool
+_s2s_completion() {
     local cur prev words cword
     _init_completion || return
 
@@ -71,7 +72,7 @@ _server_completion() {
     local edit_keys="host username password destination port zip_threshold_mb"
 
     case "$prev" in
-        server)
+        s2s)
             # Complete with commands or paths
             local IFS=$'\n'
             local path_completions
@@ -91,7 +92,7 @@ _server_completion() {
     esac
 }
 
-complete -F _server_completion server
+complete -F _s2s_completion s2s
 EOF
 
 # Source bash completions in .bashrc if not already done
@@ -110,15 +111,15 @@ echo "║                                                  ║"
 echo "║  Reload your shell:                              ║"
 echo "║    source ~/.bashrc                              ║"
 echo "║                                                  ║"
-echo "║  Then configure your server:                     ║"
-echo "║    server edit host 192.168.1.10                 ║"
-echo "║    server edit username yourname                 ║"
-echo "║    server edit password yourpassword             ║"
-echo "║    server edit destination /home/you/Downloads   ║"
+echo "║  Then configure your s2s:                        ║"
+echo "║    s2s edit host 192.168.1.10                    ║"
+echo "║    s2s edit username yourname                    ║"
+echo "║    s2s edit password yourpassword                ║"
+echo "║    s2s edit destination /home/you/Downloads      ║"
 echo "║                                                  ║"
 echo "║  Start transferring:                             ║"
-echo "║    server /path/to/file.txt                      ║"
-echo "║    server /path/to/folder/                       ║"
+echo "║    s2s /path/to/file.txt                         ║"
+echo "║    s2s /path/to/folder/                          ║"
 echo "║                                                  ║"
 echo "╚══════════════════════════════════════════════════╝"
 echo ""

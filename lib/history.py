@@ -1,17 +1,23 @@
 """
-History Logger - Records all transfer attempts to ~/.server_history.log
+History Logger - Records all transfer attempts to ~/.s2s/history.log
 """
 
 import os
 from datetime import datetime
 
-HISTORY_PATH = os.path.expanduser("~/.server_history.log")
+S2S_DIR = os.path.expanduser("~/.s2s")
+HISTORY_PATH = os.path.join(S2S_DIR, "history.log")
 DEFAULT_SHOW_COUNT = 10
 
 
 class HistoryLogger:
+    def _ensure_dir(self):
+        if not os.path.exists(S2S_DIR):
+            os.makedirs(S2S_DIR, exist_ok=True)
+
     def append(self, status, filename, destination):
         """Append a transfer record to the log file."""
+        self._ensure_dir()
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
         line = f"[{timestamp}] {status:<8} {filename} → {destination}\n"
         with open(HISTORY_PATH, "a") as f:
@@ -32,7 +38,7 @@ class HistoryLogger:
 
         if not show_all:
             lines = lines[-DEFAULT_SHOW_COUNT:]
-            header = f"📋  Last {min(DEFAULT_SHOW_COUNT, len(lines))} transfers  (use 'server history all' for full log)"
+            header = f"📋  Last {min(DEFAULT_SHOW_COUNT, len(lines))} transfers  (use 's2s history all' for full log)"
         else:
             header = f"📋  All transfers ({len(lines)} records)"
 

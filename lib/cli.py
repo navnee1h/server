@@ -11,23 +11,23 @@ from dependency import check_dependencies
 
 HELP_TEXT = """
 ╔══════════════════════════════════════════════════════╗
-║              Server CLI Tool                         ║
+║                s2s CLI Tool                          ║
 ╚══════════════════════════════════════════════════════╝
 
 Usage:
-  server <path>               Send file or folder to server
-  server show                 Show current server configuration
-  server edit <key> <value>   Edit a configuration value
-  server history              Show last 10 transfer records
-  server history all          Show all transfer records
-  server help                 Show this help menu
+  s2s <path>               Send file or folder to server
+  s2s show                 Show current configuration
+  s2s edit <key> <value>   Edit a configuration value
+  s2s history              Show last 10 transfer records
+  s2s history all          Show all transfer records
+  s2s help                 Show this help menu
 
 Examples:
-  server /home/nav/file.txt
-  server /home/nav/project/
-  server edit host 192.168.1.10
-  server edit destination /home/server/Desktop
-  server history
+  s2s /home/nav/file.txt
+  s2s /home/nav/project/
+  s2s edit host 192.168.1.10
+  s2s edit destination /home/s2s/Desktop
+  s2s history
 
 Editable config keys:
   host              Remote server IP or hostname
@@ -41,7 +41,7 @@ Notes:
   - Press ENTER to confirm transfers
   - Large folders are automatically zipped before sending
   - Zipped files are auto-extracted on the server
-  - Logs are saved to ~/.server_history.log
+  - Logs are saved to ~/.s2s/history.log
 """
 
 
@@ -69,8 +69,8 @@ def run_cli():
     # Edit config
     if command == "edit":
         if len(args) < 3:
-            print("❌  Usage: server edit <key> <value>")
-            print("    Example: server edit host 192.168.1.10")
+            print("❌  Usage: s2s edit <key> <value>")
+            print("    Example: s2s edit host 192.168.1.10")
             sys.exit(1)
         key = args[1]
         value = " ".join(args[2:])

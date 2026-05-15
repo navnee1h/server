@@ -6,13 +6,14 @@ import json
 import os
 import re
 
-CONFIG_PATH = os.path.expanduser("~/.server_config.json")
+S2S_DIR = os.path.expanduser("~/.s2s")
+CONFIG_PATH = os.path.join(S2S_DIR, "config.json")
 
 DEFAULT_CONFIG = {
     "host": "",
     "username": "",
     "password": "",
-    "destination": "/home/server/Downloads",
+    "destination": "/home/s2s/Downloads",
     "port": 22,
     "zip_threshold_mb": 50
 }
@@ -22,13 +23,18 @@ VALID_KEYS = list(DEFAULT_CONFIG.keys())
 
 class ConfigManager:
     def __init__(self):
+        self._ensure_dir()
         self.config = self._load()
+
+    def _ensure_dir(self):
+        if not os.path.exists(S2S_DIR):
+            os.makedirs(S2S_DIR, exist_ok=True)
 
     def _load(self):
         if not os.path.exists(CONFIG_PATH):
             self._save(DEFAULT_CONFIG)
             print(f"⚙️  New config created at {CONFIG_PATH}")
-            print("    Run: server edit host <ip>  to get started.\n")
+            print("    Run: s2s edit host <ip>  to get started.\n")
             return dict(DEFAULT_CONFIG)
         with open(CONFIG_PATH, "r") as f:
             data = json.load(f)
@@ -38,6 +44,7 @@ class ConfigManager:
         return data
 
     def _save(self, data):
+        self._ensure_dir()
         with open(CONFIG_PATH, "w") as f:
             json.dump(data, f, indent=2)
 
@@ -45,7 +52,7 @@ class ConfigManager:
         return self.config.get(key)
 
     def show(self):
-        print("\n⚙️  Current Server Configuration")
+        print("\n⚙️  Current s2s Configuration")
         print("─" * 40)
         for key, val in self.config.items():
             display_val = "********" if key == "password" and val else val
@@ -100,6 +107,6 @@ class ConfigManager:
         if missing:
             print("❌  Missing required config values:")
             for k in missing:
-                print(f"    server edit {k} <value>")
+                print(f"    s2s edit {k} <value>")
             return False
         return True
